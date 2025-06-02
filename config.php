@@ -24,3 +24,23 @@ function getBaseUrl() {
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
     return $protocol . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 }
+
+// Upload directories
+define('UPLOAD_BASE_DIR', __DIR__ . '/uploads/');
+define('PROFILE_PICS_DIR', UPLOAD_BASE_DIR . 'profile_pics/');
+define('POSTS_DIR', UPLOAD_BASE_DIR . 'posts/');
+define('TEMP_DIR', UPLOAD_BASE_DIR . 'temp/');
+
+// Create directories if they don't exist
+$directories = [
+    UPLOAD_BASE_DIR,
+    PROFILE_PICS_DIR,
+    POSTS_DIR,
+    TEMP_DIR
+];
+
+foreach ($directories as $dir) {
+    if (!file_exists($dir)) {
+        mkdir($dir, 0755, true);
+    }
+}
