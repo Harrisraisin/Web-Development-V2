@@ -1,10 +1,10 @@
 <?php
-require_once 'includes/db_connect.php';
-
-// Start session if not already started
+// Start session first
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+require_once 'includes/db_connect.php';
 
 // Function to check if user is logged in
 function isLoggedIn() {
@@ -17,4 +17,10 @@ function requireLogin() {
         header("Location: login.php");
         exit();
     }
+}
+
+// Function to get base URL
+function getBaseUrl() {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+    return $protocol . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
 }

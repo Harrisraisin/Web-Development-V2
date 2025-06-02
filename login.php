@@ -1,33 +1,11 @@
 <?php
 session_start();
 require_once 'config.php';
-$error = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND status = 'active'");
-        $stmt->execute([$_POST['email']]);
-        $user = $stmt->fetch();
-        
-        if ($user && password_verify($_POST['password'], $user['password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['profile_pic'] = $user['profile_pic'];
-            
-            // Update last login time
-            $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
-            $update_stmt->execute([$user['user_id']]);
-            
-            header("Location: index.php");
-            exit();
-        } else {
-            $error = "Invalid email or password!";
-        }
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
-        $error = "Login failed. Please try again later.";
-    }
+// Redirect if already logged in
+if (isLoggedIn()) {
+    header("Location: index.php");
+    exit();
 }
 ?>
 
@@ -37,6 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SocialBook</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <nav>
@@ -47,9 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="form-container">
         <h2>Login</h2>
-        <?php if($error) echo "<p class='error'>$error</p>"; ?>
+        <div id="error-message" class="error" style="display: none;"></div>
         
-        <form method="POST" action="">
+        <form id="login-form" method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" class="form-btn">Login</button>
@@ -60,5 +39,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="footer">
         <p>Copyright 2021 - Easy Tutorials YouTube Channel</p>
     </div>
+
+    <script>
+    $(document).ready(function() {
+        $('#login-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            $.ajax({
+                type: 'POST',
+                url: 'handlers/login_handler.php',
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        window.location.href = response.redirect;
+                    } else {
+                        $('#error-message')
+                            .text(response.message)
+                            .show();
+                    }
+                },
+                error: function() {
+                    $('#error-message')
+                        .text('An error occurred. Please try again.')
+                        .show();
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>
