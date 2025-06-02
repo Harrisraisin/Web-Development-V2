@@ -19,20 +19,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
 
-    // Check if email already exists
-    $check_email = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($check_email);
+    // Check if username or email already exists
+    $check_existing = "SELECT * FROM users WHERE email='$email' OR username='$username'";
+    $result = $conn->query($check_existing);
     
     if ($result->num_rows > 0) {
-        $error = "Email already exists!";
+        $user = $result->fetch_assoc();
+        if ($user['email'] == $email) {
+            $error = "Email already exists!";
+        } else {
+            $error = "Username already taken!";
+        }
     } else {
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
+        $sql = "INSERT INTO users (username, email, password, full_name, status, role) 
+                VALUES ('$username', '$email', '$password', '$full_name', 'active', 'user')";
         
         if ($conn->query($sql) === TRUE) {
             $success = "Registration successful! Please login.";
         } else {
-            $error = "Error: " . $sql . "<br>" . $conn->error;
+            $error = "Error: " . $conn->error;
         }
     }
     $conn->close();
@@ -87,8 +94,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <form method="POST" action="">
             <input type="text" name="username" placeholder="Username" required>
+            <input type="text" name="full_name" placeholder="Full Name" required>
             <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="password" placeholder="Password" required minlength="6">
             <button type="submit" class="form-btn">Register</button>
         </form>
         <p style="margin-top: 15px;">Already have an account? <a href="login.php">Login here</a></p>
