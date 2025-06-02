@@ -21,7 +21,7 @@ unset($_SESSION['error_message']);
     <title>Login - SocialBook</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="<?php echo isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark' ? 'dark-theme' : ''; ?>">
     <nav>
         <div class="nav-left">
             <a href="index.php"><img src="images/logo2.png" class="logo"></a>

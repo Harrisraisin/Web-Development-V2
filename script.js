@@ -1,4 +1,3 @@
-
 var settingsMenu = document.querySelector(".settings-menu");
 
 
@@ -14,24 +13,17 @@ darkBtn.onclick = function(){
     darkBtn.classList.toggle('dark-btn-on');
     document.body.classList.toggle("dark-theme");
 
-    if(localStorage.getItem("theme") == "light"){
-        localStorage.setItem("theme", "dark");
-    }else{
-        localStorage.setItem("theme", "light");
+    if(document.body.classList.contains("dark-theme")) {
+        document.cookie = "theme=dark;path=/;max-age=31536000"; // 1 year
+    } else {
+        document.cookie = "theme=light;path=/;max-age=31536000";
     }
-    
 }
 
-if(localStorage.getItem("theme") == "light"){
-
-    darkBtn.classList.remove('dark-btn-on');
-    document.body.classList.remove("dark-theme");
-}
-else if(localStorage.getItem("theme") == "dark"){
-
-    darkBtn.classList.add('dark-btn-on');
-    document.body.classList.add("dark-theme");
-}
-else{
-    localStorage.setItem("theme", "light");
+// Check theme on load
+window.onload = function() {
+    if(document.cookie.includes('theme=dark')) {
+        darkBtn.classList.add('dark-btn-on');
+        document.body.classList.add("dark-theme");
+    }
 }

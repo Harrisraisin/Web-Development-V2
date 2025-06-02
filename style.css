@@ -24,6 +24,19 @@
     --nav-color: #000;
     --bg-color: #000;
     --text-color: #fff;
+    --secondary-color: #fff;
+    --border-color: #333;
+    --hover-color: #1876f2;
+}
+
+/* Add transition to all elements */
+* {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+    background: var(--body-color);
+    color: var(--text-color);
 }
 
 /* --------------- Global Styles ------------ */
@@ -905,7 +918,7 @@ ul {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     background: var(--body-color);
-    color: var(--secondary-color);
+    color: var(--text-color);
 }
 
 .form-btn {
