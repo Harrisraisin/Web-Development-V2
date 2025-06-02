@@ -44,6 +44,7 @@ if (isLoggedIn()) {
     $(document).ready(function() {
         $('#login-form').on('submit', function(e) {
             e.preventDefault();
+            $('#error-message').hide();
             
             $.ajax({
                 type: 'POST',
@@ -51,15 +52,17 @@ if (isLoggedIn()) {
                 data: $(this).serialize(),
                 dataType: 'json',
                 success: function(response) {
+                    console.log('Response:', response); // Debug log
                     if (response.success) {
                         window.location.href = response.redirect;
                     } else {
                         $('#error-message')
-                            .text(response.message)
+                            .text(response.message || 'Login failed')
                             .show();
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Ajax error:', error); // Debug log
                     $('#error-message')
                         .text('An error occurred. Please try again.')
                         .show();
