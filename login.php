@@ -35,11 +35,6 @@ if (isLoggedIn()) {
         </form>
         <p style="margin-top: 15px;">Don't have an account? <a href="register.php">Register here</a></p>
     </div>
-
-    <div class="footer">
-        <p>Copyright 2021 - Easy Tutorials YouTube Channel</p>
-    </div>
-
     <script>
     $(document).ready(function() {
         $('#login-form').on('submit', function(e) {

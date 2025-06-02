@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -17,37 +18,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        // Debug log query result
-        error_log("Query result: " . ($user ? "User found" : "No user found"));
-        
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                if ($user['status'] === 'active') {
-                    // Set session variables
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['username'] = $user['username'];
-                    $_SESSION['role'] = $user['role'];
-                    $_SESSION['profile_pic'] = $user['profile_pic'];
-                    
-                    // Update last login
-                    $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
-                    $update_stmt->execute([$user['user_id']]);
-                    
-                    $response['success'] = true;
-                    $response['redirect'] = '../index.php';
-                    
-                    error_log("Login successful for user: " . $user['username']);
-                } else {
-                    $response['message'] = "Account is not active";
-                    error_log("Inactive account attempt: " . $email);
-                }
+        if ($user && password_verify($password, $user['password'])) {
+            if ($user['status'] === 'active') {
+                // Set session variables
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['profile_pic'] = $user['profile_pic'] ?? 'images/profile-pic.png';
+                
+                // Update last login
+                $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
+                $update_stmt->execute([$user['user_id']]);
+                
+                $response['success'] = true;
+                $response['redirect'] = '../index.php';
+                
+                error_log("Login successful for user: " . $user['username']);
             } else {
-                $response['message'] = "Invalid password";
-                error_log("Invalid password attempt for: " . $email);
+                $response['message'] = "Account is not active";
             }
         } else {
-            $response['message'] = "Email not found";
-            error_log("Email not found: " . $email);
+            $response['message'] = "Invalid email or password";
         }
     } catch (PDOException $e) {
         error_log("Login error: " . $e->getMessage());

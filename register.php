@@ -92,9 +92,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </form>
         <p style="margin-top: 15px;">Already have an account? <a href="login.php">Login here</a></p>
     </div>
-
-    <div class="footer">
-        <p>Copyright 2021 - Easy Tutorials YouTube Channel</p>
-    </div>
 </body>
 </html>

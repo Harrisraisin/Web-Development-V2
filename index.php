@@ -336,9 +336,7 @@ $user = $stmt->fetch();
 
        </div>
     </div>
-    <div class="footer">
-        <p>Copyright 2021 - Easy Tutorials YouTube Channel</p>
-    </div>
+
 
     <script src="script.js"></script>
 </body>

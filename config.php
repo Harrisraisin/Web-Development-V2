@@ -8,7 +8,7 @@ require_once 'includes/db_connect.php';
 
 // Function to check if user is logged in
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
 // Function to redirect if not logged in
