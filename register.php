@@ -1,48 +1,40 @@
 <?php
+require_once 'config.php';
 $error = '';
 $success = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "socialbook";
+    try {
+        $username = mysqli_real_escape_string($conn, $_POST['username']);
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
-
-    // Check if username or email already exists
-    $check_existing = "SELECT * FROM users WHERE email='$email' OR username='$username'";
-    $result = $conn->query($check_existing);
-    
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        if ($user['email'] == $email) {
-            $error = "Email already exists!";
-        } else {
-            $error = "Username already taken!";
-        }
-    } else {
-        $sql = "INSERT INTO users (username, email, password, full_name, status, role) 
-                VALUES ('$username', '$email', '$password', '$full_name', 'active', 'user')";
+        // Check if username or email already exists
+        $check_existing = "SELECT * FROM users WHERE email='$email' OR username='$username'";
+        $result = $conn->query($check_existing);
         
-        if ($conn->query($sql) === TRUE) {
-            $success = "Registration successful! Please login.";
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+            if ($user['email'] == $email) {
+                $error = "Email already exists!";
+            } else {
+                $error = "Username already taken!";
+            }
         } else {
-            $error = "Error: " . $conn->error;
+            $sql = "INSERT INTO users (username, email, password, full_name, status, role) 
+                    VALUES ('$username', '$email', '$password', '$full_name', 'active', 'user')";
+            
+            if ($conn->query($sql) === TRUE) {
+                $success = "Registration successful! Please login.";
+            } else {
+                throw new Exception($conn->error);
+            }
         }
+    } catch (Exception $e) {
+        $error = "Registration failed. Please try again later.";
+        error_log($e->getMessage());
     }
-    $conn->close();
 }
 ?>
 

@@ -1,48 +1,40 @@
 <?php
 session_start();
+require_once 'config.php';
 $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "socialbook";
+    try {
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
+        $password = $_POST['password'];
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
-    $password = $_POST['password'];
-
-    $sql = "SELECT * FROM users WHERE email='$email' AND status='active'";
-    $result = $conn->query($sql);
-    
-    if ($result->num_rows == 1) {
-        $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['profile_pic'] = $user['profile_pic'];
-            
-            // Update last login time
-            $update_sql = "UPDATE users SET last_login = NOW() WHERE user_id = " . $user['user_id'];
-            $conn->query($update_sql);
-            
-            header("Location: index.html");
-            exit();
+        $sql = "SELECT * FROM users WHERE email='$email' AND status='active'";
+        $result = $conn->query($sql);
+        
+        if ($result->num_rows == 1) {
+            $user = $result->fetch_assoc();
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['profile_pic'] = $user['profile_pic'];
+                
+                // Update last login time
+                $update_sql = "UPDATE users SET last_login = NOW() WHERE user_id = " . $user['user_id'];
+                $conn->query($update_sql);
+                
+                header("Location: index.html");
+                exit();
+            } else {
+                $error = "Invalid password!";
+            }
         } else {
-            $error = "Invalid password!";
+            $error = "Email not found or account is inactive!";
         }
-    } else {
-        $error = "Email not found or account is inactive!";
+    } catch (Exception $e) {
+        $error = "Login failed. Please try again later.";
+        error_log($e->getMessage());
     }
-    $conn->close();
 }
 ?>
 
