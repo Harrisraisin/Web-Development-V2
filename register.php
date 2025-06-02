@@ -5,35 +5,34 @@ $success = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        $username = mysqli_real_escape_string($conn, $_POST['username']);
-        $email = mysqli_real_escape_string($conn, $_POST['email']);
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
-
-        // Check if username or email already exists
-        $check_existing = "SELECT * FROM users WHERE email='$email' OR username='$username'";
-        $result = $conn->query($check_existing);
+        // Check if username or email exists
+        $check_stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR username = ?");
+        $check_stmt->execute([$_POST['email'], $_POST['username']]);
         
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            if ($user['email'] == $email) {
+        if ($check_stmt->rowCount() > 0) {
+            $existing_user = $check_stmt->fetch();
+            if ($existing_user['email'] == $_POST['email']) {
                 $error = "Email already exists!";
             } else {
                 $error = "Username already taken!";
             }
         } else {
-            $sql = "INSERT INTO users (username, email, password, full_name, status, role) 
-                    VALUES ('$username', '$email', '$password', '$full_name', 'active', 'user')";
+            // Insert new user
+            $stmt = $pdo->prepare("INSERT INTO users (username, email, password, full_name, status, role) 
+                                 VALUES (?, ?, ?, ?, 'active', 'user')");
             
-            if ($conn->query($sql) === TRUE) {
-                $success = "Registration successful! Please login.";
-            } else {
-                throw new Exception($conn->error);
-            }
+            $stmt->execute([
+                $_POST['username'],
+                $_POST['email'],
+                password_hash($_POST['password'], PASSWORD_DEFAULT),
+                $_POST['full_name']
+            ]);
+            
+            $success = "Registration successful! Please login.";
         }
-    } catch (Exception $e) {
-        $error = "Registration failed. Please try again later.";
+    } catch (PDOException $e) {
         error_log($e->getMessage());
+        $error = "Registration failed. Please try again later.";
     }
 }
 ?>

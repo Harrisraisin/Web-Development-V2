@@ -5,35 +5,28 @@ $error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
-        $email = mysqli_real_escape_string($conn, $_POST['email']);
-        $password = $_POST['password'];
-
-        $sql = "SELECT * FROM users WHERE email='$email' AND status='active'";
-        $result = $conn->query($sql);
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? AND status = 'active'");
+        $stmt->execute([$_POST['email']]);
+        $user = $stmt->fetch();
         
-        if ($result->num_rows == 1) {
-            $user = $result->fetch_assoc();
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-                $_SESSION['profile_pic'] = $user['profile_pic'];
-                
-                // Update last login time
-                $update_sql = "UPDATE users SET last_login = NOW() WHERE user_id = " . $user['user_id'];
-                $conn->query($update_sql);
-                
-                header("Location: index.html");
-                exit();
-            } else {
-                $error = "Invalid password!";
-            }
+        if ($user && password_verify($_POST['password'], $user['password'])) {
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['profile_pic'] = $user['profile_pic'];
+            
+            // Update last login time
+            $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
+            $update_stmt->execute([$user['user_id']]);
+            
+            header("Location: index.html");
+            exit();
         } else {
-            $error = "Email not found or account is inactive!";
+            $error = "Invalid email or password!";
         }
-    } catch (Exception $e) {
-        $error = "Login failed. Please try again later.";
+    } catch (PDOException $e) {
         error_log($e->getMessage());
+        $error = "Login failed. Please try again later.";
     }
 }
 ?>
@@ -44,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SocialBook</title>
     <link rel="stylesheet" href="style.css">
-    <style>
+    <style></style>
         .form-container {
             background: var(--bg-color);
             padding: 20px;
