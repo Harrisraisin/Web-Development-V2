@@ -1,0 +1,33 @@
+.DS_Store
+phpunit.xml
+.phpunit*
+.idea
+.cache
+
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+logs
+results
+src/vendor
+vendor
+composer.lock
+
+node_modules
+npm-debug.log
+
+.phpcs/*.json
+
+# The build directory.
+build
+dist
+
+# The custom Docker config file.
+.wp-env.override.json

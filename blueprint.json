@@ -1,0 +1,25 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "\/wp-admin\/admin.php?page=bp-components",
+	"preferredVersions": {
+		"php": "8.2",
+		"wp": "latest"
+	},
+	"login": true,
+	"siteOptions": {
+		"blogname": "BuddyPress stable Playground"
+	},
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "buddypress"
+			}
+		},
+		{
+			"step": "activateTheme",
+			"themeFolderName": "twentytwentyfour"
+		}
+	]
+}

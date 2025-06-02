@@ -1,0 +1,80 @@
+[
+	{
+		"title": "Contributor Handbook",
+		"slug": "handbook",
+		"markdown_source": "../contributor/README.md",
+		"parent": null
+	},
+	{
+		"title": "About the BuddyPress open source project",
+		"slug": "about",
+		"markdown_source": "../contributor/project/README.md",
+		"parent": null
+	},
+	{
+		"title": "The BuddyPress Team",
+		"slug": "bp-team",
+		"markdown_source": "../contributor/project/bp-team.md",
+		"parent": null
+	},
+	{
+		"title": "Version Numbering",
+		"slug": "version-numbering",
+		"markdown_source": "../contributor/project/version-numbering.md",
+		"parent": null
+	},
+	{
+		"title": "BuddyPress commit access",
+		"slug": "commit-access",
+		"markdown_source": "../contributor/project/commit-access.md",
+		"parent": null
+	},
+	{
+		"title": "How a release cycle works?",
+		"slug": "about-release",
+		"markdown_source": "../contributor/project/release/README.md",
+		"parent": null
+	},
+	{
+		"title": "Release Leads & Deputies",
+		"slug": "about-release-leads",
+		"markdown_source": "../contributor/project/release/leads.md",
+		"parent": null
+	},
+	{
+		"title": "Building a new BuddyPress release",
+		"slug": "about-release-builds",
+		"markdown_source": "../contributor/project/release/build-checklist.md",
+		"parent": null
+	},
+	{
+		"title": "Testing a release before deploying it",
+		"slug": "about-release-tests",
+		"markdown_source": "../contributor/project/release/test-checklist.md",
+		"parent": null
+	},
+	{
+		"title": "Contribute to documentation",
+		"slug": "contribute-to-documentation",
+		"markdown_source": "../contributor/documentation/README.md",
+		"parent": null
+	},
+	{
+		"title": "Contribute to code",
+		"slug": "contribute-to-code",
+		"markdown_source": "../contributor/code/README.md",
+		"parent": null
+	},
+	{
+		"title": "Reporting Bugs",
+		"slug": "report-bugs",
+		"markdown_source": "../contributor/code/report-bugs.md",
+		"parent": null
+	},
+	{
+		"title": "Contribute to Support",
+		"slug": "contribute-to-support",
+		"markdown_source": "../contributor/support/README.md",
+		"parent": null
+	}
+]
