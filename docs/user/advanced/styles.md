@@ -1,3 +1,0 @@
-# Customizing styles
-
-TBD.
