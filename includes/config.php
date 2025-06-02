@@ -16,6 +16,6 @@ try {
 } catch (Exception $e) {
     // Log error and show user-friendly message
     error_log($e->getMessage());
-    die("Sorry, there was a problem connecting to the database.");
+    die("Sorry, there was a problem connecting to the database. Error: " . $e->getMessage());
 }
 ?>
