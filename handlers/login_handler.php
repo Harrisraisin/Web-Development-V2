@@ -1,40 +1,33 @@
+<!-- login Handler.PHP^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 <?php
-session_start();
-require_once '../config.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    try {
-        // Sanitize input
-        $email = trim(filter_var($_POST['email'], FILTER_SANITIZE_EMAIL));
-        $password = trim($_POST['password']);
-        
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-        if ($user && password_verify($password, $user['password'])) {
-            if ($user['status'] === 'active') {
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = $user['role'];
-                $_SESSION['profile_pic'] = $user['profile_pic'] ?? 'images/profile-pic.png';
-                
-                // Update last login
-                $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
-                $update_stmt->execute([$user['user_id']]);
-                
-                header("Location: ../index.php");
-                exit();
-            } else {
-                $_SESSION['error_message'] = "Account is not active";
-            }
-        } else {
-            $_SESSION['error_message'] = "Invalid email or password";
+$error_array_login = array();
+
+if(isset($_POST['login_button'])){
+    $email = filter_var($_POST['log_email'], FILTER_SANITIZE_EMAIL);
+
+    $_SESSION['log_email'] = $email;
+    $password = $_POST['log_password'];
+
+    $check_database_query = mysqli_query($con, "SELECT * FROM users WHERE email='$email' AND password='$password'");
+    $check_login_query = mysqli_num_rows($check_database_query);
+
+    if($check_login_query == 1){
+        $row = mysqli_fetch_array($check_database_query);
+        $username = $row['username'];
+
+        $user_closed_query = mysqli_query($con,"select * from users where email='$email' and user_closed='yes'");
+        if(mysqli_num_rows($user_closed_query) == 1){
+            $reopen_acc = mysqli_query($con, "update users set user_closed='no' where email='$email'");
         }
-    } catch (PDOException $e) {
-        error_log("Login error: " . $e->getMessage());
-        $_SESSION['error_message'] = "Login failed. Please try again later.";
+
+        $_SESSION['username'] = $username;
+        header("Location: index.php");
+        exit();
+    }
+    else{
+        array_push($error_array_login, "Email or Password was incorrect");
     }
 }
-header("Location: ../login.php");
-exit();
+
+?>

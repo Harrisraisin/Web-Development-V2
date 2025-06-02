@@ -1,335 +1,138 @@
-<?php
-require_once 'config.php';
-requireLogin();
 
-// Get user data
-$stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
+<!-- Index.php^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+
+<?php
+    include 'header.php';
+    // include 'classes/User.php';
+    // include 'classes/Post.php';
+    // include 'classes/Message.php';
+
+    if(isset($_POST['post'])){
+        $uploadOk = 1;
+        $imageName = $_FILES['fileToUpload']['name'];
+        $errorMessage = "";
+        
+        if($imageName != ""){
+            $targetDir = "assets/images/posts/";
+            $imageName = $targetDir . uniqid() . basename($imageName);
+            $imageFileType = pathinfo($imageName, PATHINFO_EXTENSION);
+            
+            if($uploadOk){
+                if(move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $imageName)){
+                    //image Upload Okey
+                    $errorMessage = "uploaded";
+                }
+                else{
+                    $uploadOk = 0;
+                    $errorMessage = "fail to upload";
+                }
+            }
+        }
+        
+        if($uploadOk){
+            $post = new Post($con, $userLoggedIn);
+            $post->submitPost($_POST['post_text'], $imageName);
+        }
+        else{
+            echo "<div style='text-align: center;' class='alert alert-danger'> $errorMessage </div>";
+        }
+    }
+
+    $user_detail_query = mysqli_query($con,"select * from users where username='$userLoggedIn'");
+    $user_array = mysqli_fetch_array($user_detail_query);
+    $num_friends = (substr_count($user_array['friend_array'],","))-1;
+
 ?>
 
-
-    
-    <nav>
-        <div class="nav-left">
-          <a href="index.php"><img src="images/logo2.png" class="logo"></a>
-        <ul>
-           
-            <li><img src="images/notification.png"></li>
-            <li><img src="images/inbox.png"></li>
-            <li><img src="images/video.png"></li>
-        </ul>
-        </div>
-        
-        <div class="nav-right">
-            <div class="search-box">
-                <img src="images/search.png">
-                <input type="text" placeholder="Search">
+<div class="index-wrapper">
+    <div class="info-box">
+        <div class="info-inner">
+            <div class="info-in-head">
+                <a href="<?php echo $userLoggedIn; ?>"><img src="<?php echo $user['cover_pic']; ?>"></a>
             </div>
-            <a href="handlers/signout_handler.php" class="signout-btn">Sign Out</a>
-            <div class="nav-user-icon online" onclick="settingsMenuToggle()">
-                <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>">
-            </div>
-            
-        </div>
-        <!-- ------dropdown-settings-menu--------- -->
-        <div class="settings-menu">
-            <div id="dark-btn">
-                <span></span>
-            </div>
-            <div class="settings-menu-inner">
-                <div class="user-profile">
-                    <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>">
-                    <div>
-                        <p><?php echo htmlspecialchars($user['full_name']); ?></p>
-                        <a href="profile.php">See your profile</a>
+            <div class="info-in-body">
+                <div class="in-b-box">
+                    <div class="in-b-img">
+                        <a href="<?php echo $userLoggedIn; ?>"><img src="<?php echo $user['profile_pic']; ?>"></a>
                     </div>
                 </div>
-                <hr>
-                <div class="user-profile">
-                    <img src="images/feedback.png">
-                    <div>
-                        <p>Give Feedback</p>
-                        <a href="">Help us improve the new deisgn</a>
+                <div class="info-body-name">
+                    <div class="in-b-name">
+                        <div><a href="<?php echo $userLoggedIn; ?>"><?php echo $user['first_name'] . " " . $user['last_name']; ?></a>
+                        </div>
+                        <span><small><a href="<?php echo $userLoggedIn; ?>"><?php echo "@" . $user['username'] ?></a></small></span>
                     </div>
                 </div>
-                <hr>
-                <div class="settings-links">
-                    <img src="images/setting.png" class="settings-icon">
-                    <a href="">Settings & Privacy <img src="images/arrow.png" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="images/help.png" class="settings-icon">
-                    <a href="">Help & Support <img src="images/arrow.png" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="images/display.png" class="settings-icon">
-                    <a href="">Display & Accessibility <img src="images/arrow.png" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="images/logout.png" class="settings-icon">
-                    <a href="logout.php">Logout <img src="images/arrow.png" width="10px"></a>
-                </div>
             </div>
-            
-        </div>
-    </nav>
-    <div class="container">
-       <div class="left-sidebar">
-           <div class="imp-links">
-               <a href="#"><img src="images/news.png"> Latest News</a>
-               <a href="#"><img src="images/friends.png"> Friends</a>
-               <a href="#"><img src="images/group.png"> Groups</a>
-               <a href="#"><img src="images/marketplace.png"> Marketplace</a>
-               <a href="#"><img src="images/watch.png"> Watch</a>
-               <a href="#">See More</a>
-           </div>
-           <div class="shortcut-links">
-            <p>Your Shortcuts</p>
-            <a href="#"><img src="images/shortcut-1.png"> Web Developers</a>
-            <a href="#"><img src="images/shortcut-2.png"> Web Design Course</a>
-            <a href="#"><img src="images/shortcut-3.png"> Full Stack Development</a>
-            <a href="#"><img src="images/shortcut-4.png"> Website Experts</a>
-            
-        </div>
-       </div>
-<!----------------- middle content--------- -->
-       <div class="main-content">
-        <div class="story-gallery">
-            <div class="story story1">
-                <img src="images/upload.png">
-                <p>Post Story</p>
-            </div>
-            <div class="story story2">
-                <img src="images/member-1.png">
-                <p>Alison</p>
-            </div>
-            <div class="story story3">
-                <img src="images/member-2.png">
-                <p>Jackson</p>
-            </div>
-            <div class="story story4">
-                <img src="images/member-3.png">
-                <p>Samona</p>
-            </div>
-            <div class="story story5">
-                <img src="images/member-4.png">
-                <p>John Doe</p>
-            </div>
-        </div>
-
-        <div class="write-post-container">
-            <div class="user-profile">
-                <img src="images/profile-pic.png">
-                <div>
-                    <p>John Nicholson</p>
-                    <small>Public <i class="fas fa-caret-down"></i></small>
-                </div>
-            </div>
-
-            <div class="post-input-container">
-                <textarea rows="3" placeholder="What's on your mind, Jack?"></textarea>
-                <div class="add-post-links">
-                    <a href="#"><img src="images/live-video.png"> Live Video</a>
-                    <a href="#"><img src="images/photo.png"> Photo/Video</a>
-                    <a href="#"><img src="images/feeling.png"> Feeling/Activity</a>
-                </div>
-            </div>
-
-        </div>
-        <div class="post-container">
-            <div class="post-row">
-                <div class="user-profile">
-                    <img src="images/profile-pic.png">
-                    <div>
-                        <p>John Nicholson</p>
-                        <span>June 24 2021, 13:40 pm</span>
+            <div class="info-in-footer">
+                <div class="number-wrapper">
+                    <div class="num-box">
+                        <div class="num-head">
+                            POSTS
+                        </div>
+                        <div class="num-body">
+                            <?php echo $user['num_posts']; ?>
+                        </div>
+                    </div>
+                    <div class="num-box">
+                        <div class="num-head">
+                            LIKES
+                        </div>
+                        <div class="num-body">
+                            <span class="count-likes">
+                                <?php echo $user['num_likes']; ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="num-box">
+                        <div class="num-head">
+                            Friends
+                        </div>
+                        <div class="num-body">
+                            <?php echo $num_friends ?>
+                        </div>
                     </div>
                 </div>
-                <a href="#"><i class="fas fa-ellipsis-v"></i></a>
-            </div>
-            <p class="post-text">Subscribe <span>@Easy Tutorials</span> YouTube channel to watch more videos on website developement and UI designs. <a href="">#EasyTutorials</a> <a href="">#YouTubeChannel</a></p>
-            <img src="images/feed-image-1.png" class="post-img">
-            <div class="post-row">
-                <div class="activity-icons">
-                    <div><img src="images/like-blue.png"> 120</div>
-                    <div><img src="images/comments.png"> 45</div>
-                    <div><img src="images/share.png"> 20</div>
-                </div>
-                <div class="post-profile-icon">
-                    <img src="images/profile-pic.png"> <i class="fas fa-caret-down"></i>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="post-container">
-            <div class="post-row">
-                <div class="user-profile">
-                    <img src="images/profile-pic.png">
-                    <div>
-                        <p>John Nicholson</p>
-                        <span>June 24 2021, 13:40 pm</span>
-                    </div>
-                </div>
-                <a href="#"><i class="fas fa-ellipsis-v"></i></a>
-            </div>
-            <p class="post-text">Like and share this video with friends, tag <span>@Easy Tutorials</span> facebook page on your post. Ask you doubts in the comments <a href="">#EasyTutorials</a> <a href="">#Subscribe</a></p>
-            <img src="images/feed-image-2.png" class="post-img">
-            <div class="post-row">
-                <div class="activity-icons">
-                    <div><img src="images/like.png"> 120</div>
-                    <div><img src="images/comments.png"> 45</div>
-                    <div><img src="images/share.png"> 20</div>
-                </div>
-                <div class="post-profile-icon">
-                    <img src="images/profile-pic.png"> <i class="fas fa-caret-down"></i>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="post-container">
-            <div class="post-row">
-                <div class="user-profile">
-                    <img src="images/profile-pic.png">
-                    <div>
-                        <p>John Nicholson</p>
-                        <span>June 24 2021, 13:40 pm</span>
-                    </div>
-                </div>
-                <a href="#"><i class="fas fa-ellipsis-v"></i></a>
-            </div>
-            <p class="post-text">Like and share this video with friends, tag <span>@Easy Tutorials</span> facebook page on your post. Ask you doubts in the comments <a href="">#EasyTutorials</a> <a href="">#Subscribe</a></p>
-            <img src="images/feed-image-3.png" class="post-img">
-            <div class="post-row">
-                <div class="activity-icons">
-                    <div><img src="images/like.png"> 120</div>
-                    <div><img src="images/comments.png"> 45</div>
-                    <div><img src="images/share.png"> 20</div>
-                </div>
-                <div class="post-profile-icon">
-                    <img src="images/profile-pic.png"> <i class="fas fa-caret-down"></i>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="post-container">
-            <div class="post-row">
-                <div class="user-profile">
-                    <img src="images/profile-pic.png">
-                    <div>
-                        <p>John Nicholson</p>
-                        <span>June 24 2021, 13:40 pm</span>
-                    </div>
-                </div>
-                <a href="#"><i class="fas fa-ellipsis-v"></i></a>
-            </div>
-            <p class="post-text">Like and share this video with friends, tag <span>@Easy Tutorials</span> facebook page on your post. Ask you doubts in the comments <a href="">#EasyTutorials</a> <a href="">#Subscribe</a></p>
-            <img src="images/feed-image-4.png" class="post-img">
-            <div class="post-row">
-                <div class="activity-icons">
-                    <div><img src="images/like.png"> 120</div>
-                    <div><img src="images/comments.png"> 45</div>
-                    <div><img src="images/share.png"> 20</div>
-                </div>
-                <div class="post-profile-icon">
-                    <img src="images/profile-pic.png"> <i class="fas fa-caret-down"></i>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="post-container">
-            <div class="post-row">
-                <div class="user-profile">
-                    <img src="images/profile-pic.png">
-                    <div>
-                        <p>John Nicholson</p>
-                        <span>June 24 2021, 13:40 pm</span>
-                    </div>
-                </div>
-                <a href="#"><i class="fas fa-ellipsis-v"></i></a>
-            </div>
-            <p class="post-text">Like and share this video with friends, tag <span>@Easy Tutorials</span> facebook page on your post. Ask you doubts in the comments <a href="">#EasyTutorials</a> <a href="">#Subscribe</a></p>
-            <img src="images/feed-image-5.png" class="post-img">
-            <div class="post-row">
-                <div class="activity-icons">
-                    <div><img src="images/like.png"> 120</div>
-                    <div><img src="images/comments.png"> 45</div>
-                    <div><img src="images/share.png"> 20</div>
-                </div>
-                <div class="post-profile-icon">
-                    <img src="images/profile-pic.png"> <i class="fas fa-caret-down"></i>
-                </div>
-            </div>
-
-        </div>
-        
-        <button type="button" class="load-more-btn">Load More</button>
-
-       </div>
-<!-- ----------right sidebar----------- -->
-       <div class="right-sidebar">
-           <div class="sidebar-title">
-               <h4>Events</h4>
-               <a href="#">See All</a>
-           </div>
-
-           <div class="event">
-               <div class="event-left">
-                    <h3>18</h3>
-                    <span>March</span>
-               </div>
-               <div class="event-right">
-                   <h4>Social Media</h4>
-                   <p><i class="fas fa-map-marker-alt"></i> Willson Tech Park</p>
-                   <a href="#">More Info</a>
-               </div>
-           </div>
-           <div class="event">
-            <div class="event-left">
-                 <h3>22</h3>
-                 <span>March</span>
-            </div>
-            <div class="event-right">
-                <h4>Mobile Marketing</h4>
-                <p><i class="fas fa-map-marker-alt"></i> Willson Tech Park</p>
-                <a href="#">More Info</a>
             </div>
         </div>
-
-        <div class="sidebar-title">
-            <h4>Advertisement</h4>
-            <a href="#">Close</a>
-        </div>
-
-        <img src="images/advertisement.png" class="sidebar-ad">
-
-        <div class="sidebar-title">
-            <h4>Conversation</h4>
-            <a href="#">Hide Chat</a>
-        </div>
-
-        <div class="online-list">
-            <div class="online"><img src="images/member-1.png"></div>
-            <p>Alison Mina</p>
-        </div>
-        <div class="online-list">
-            <div class="online"><img src="images/member-2.png"></div>
-            <p>Jackson Aston</p>
-        </div>
-        <div class="online-list">
-            <div class="online"><img src="images/member-3.png"></div>
-            <p>Samona Rose</p>
-        </div>
-        
-
-       </div>
     </div>
-
-
-    <script src="script.js"></script>
+    
+    <div class="post-wrap">
+        <div class="post-inner">
+            <div class="post-h-left">
+                <div class="post-h-img">
+                    <a href="<?php echo $userLoggedIn; ?>"><img src="<?php echo $user['profile_pic'] ?>"></a>
+                 </div>
+            </div>
+            
+            <div class="post-body">
+                <form class="post_form" action="index.php" method="POST" enctype="multipart/form-data">
+                    <textarea class="status" name="post_text" id="post_text" placeholder="Type Something here!" rows="4" cols="50"></textarea>
+                    <div class="hash-box">
+                        <ul>
+                        </ul>
+                    </div>
+            </div>
+                <div class="post-footer">
+                    <div class="p-fo-left">
+                        <ul>
+                            <input type="file" name="fileToUpload" id="fileToUpload"/>
+                            <label for="fileToUpload"> <img src="assets/images/camera.png" alt="" height="30px"></i> </label>
+                            <span class="tweet-error"></span>
+                            <input id="sub-btn" type="submit" name="post" value="SHARE">
+                        </ul>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="show_post">
+        <?php 
+            $post = new Post($con, $userLoggedIn) ;
+            $post->indexPosts();
+        ?>
+    </div>
+</div>
 </body>
 </html>
