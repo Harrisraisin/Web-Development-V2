@@ -1,81 +1,101 @@
 <?php
-session_start(); // Start the session
-include 'includes/config.php'; // Include database connection
+$error = '';
+$success = '';
 
-// Enable error reporting for debugging (remove in production)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "socialbook";
 
-$error = ""; // Initialize error variable
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Function to redirect to a specific URL
-function redirect($url) {
-    header("Location: $url");
-    exit();
-}
-
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize and validate input
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-    $confirmPassword = $_POST['confirmPassword'];
-
-    // Validate input
-    if (empty($username) || empty($password) || empty($confirmPassword)) {
-        $error = "All fields are required.";
-    } elseif ($password !== $confirmPassword) {
-        $error = "Passwords do not match.";
-    } elseif (strlen($password) < 8) {
-        $error = "Password must be at least 8 characters long.";
-    } else {
-        // Check if the username already exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows > 0) {
-            $error = "Username already taken.";
-        } else {
-            // Hash the password and insert the new user
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-            $stmt->bind_param("ss", $username, $hashedPassword);
-            if ($stmt->execute()) {
-    // Redirect to the login page after successful registration
-    redirect('http://localhost/CT403%202024-25%20001%2027%20May%202025/index.php');
-} else {
-    $error = "Error registering user.";
-}
-        }
-        $stmt->close();
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
+
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    // Check if email already exists
+    $check_email = "SELECT * FROM users WHERE email='$email'";
+    $result = $conn->query($check_email);
+    
+    if ($result->num_rows > 0) {
+        $error = "Email already exists!";
+    } else {
+        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
+        
+        if ($conn->query($sql) === TRUE) {
+            $success = "Registration successful! Please login.";
+        } else {
+            $error = "Error: " . $sql . "<br>" . $conn->error;
+        }
+    }
+    $conn->close();
 }
-$conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>Register - SocialSphere</title>
+    <title>Register - SocialBook</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .form-container {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 6px;
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-btn {
+            background: #1876f2;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Create an Account</h1>
-        <?php if (!empty($error)): ?>
-            <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-        <form action="register.php" method="POST">
+    <nav>
+        <div class="nav-left">
+            <a href="index.html"><img src="images/logo2.png" class="logo"></a>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <h2>Register</h2>
+        <?php if($error) echo "<p class='error'>$error</p>"; ?>
+        <?php if($success) echo "<p class='success'>$success</p>"; ?>
+        
+        <form method="POST" action="">
             <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
-            <button type="submit">Register</button>
+            <button type="submit" class="form-btn">Register</button>
         </form>
-        <p>Already have an account? <a href="index.php">Login here</a></p>
+        <p style="margin-top: 15px;">Already have an account? <a href="login.php">Login here</a></p>
+    </div>
+
+    <div class="footer">
+        <p>Copyright 2021 - Easy Tutorials YouTube Channel</p>
     </div>
 </body>
 </html>
