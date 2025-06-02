@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost:3306";
 $username = "s4303980_dbuser"; // Updated to match hosting username
-$password = ""; // Replace with actual database password
+$password = "password"; // Replace with actual database password
 $dbname = "s4303980_dbuser";
 
 try {
