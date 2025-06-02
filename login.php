@@ -28,7 +28,7 @@ if (isLoggedIn()) {
         <h2>Login</h2>
         <div id="error-message" class="error" style="display: none;"></div>
         
-        <form action="includes/login_handler.php" id="login-form" method="POST">
+        <form action="handlers\login_handler.php" id="login-form" method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" class="form-btn">Login</button>
