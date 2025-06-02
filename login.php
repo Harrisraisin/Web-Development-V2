@@ -7,6 +7,11 @@ if (isLoggedIn()) {
     header("Location: index.php");
     exit();
 }
+
+// Capture error message from session
+$error = $_SESSION['error_message'] ?? '';
+// Clear error message from session
+unset($_SESSION['error_message']);
 ?>
 
 <!DOCTYPE html>
@@ -15,20 +20,21 @@ if (isLoggedIn()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SocialBook</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <nav>
         <div class="nav-left">
-            <a href="index.html"><img src="images/logo2.png" class="logo"></a>
+            <a href="index.php"><img src="images/logo2.png" class="logo"></a>
         </div>
     </nav>
 
     <div class="form-container">
         <h2>Login</h2>
-        <div id="error-message" class="error" style="display: none;"></div>
+        <?php if($error): ?>
+            <div class="error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
         
-        <form action="handlers\login_handler.php" id="login-form" method="POST">
+        <form action="handlers/login_handler.php" id="login-form" method="POST">
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit" class="form-btn">Login</button>
