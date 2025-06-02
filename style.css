@@ -812,5 +812,20 @@ nav{
     background: rgba(40, 167, 69, 0.1);
 }
 
+.signout-btn {
+    background: #e4e6eb;
+    color: #1876f2;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.signout-btn:hover {
+    background: #ddd;
+}
+
 
 

@@ -34,6 +34,7 @@ $user = $stmt->fetch();
                 <img src="images/search.png">
                 <input type="text" placeholder="Search">
             </div>
+            <a href="handlers/signout_handler.php" class="signout-btn">Sign Out</a>
             <div class="nav-user-icon online" onclick="settingsMenuToggle()">
                 <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>">
             </div>
