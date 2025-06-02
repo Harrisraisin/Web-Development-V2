@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $update_stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?");
             $update_stmt->execute([$user['user_id']]);
             
-            header("Location: index.html");
+            header("Location: index.php");
             exit();
         } else {
             $error = "Invalid email or password!";
@@ -37,32 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SocialBook</title>
     <link rel="stylesheet" href="style.css">
-    <style></style>
-        .form-container {
-            background: var(--bg-color);
-            padding: 20px;
-            border-radius: 6px;
-            max-width: 400px;
-            margin: 100px auto;
-        }
-        .form-container input {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .form-btn {
-            background: #1876f2;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .error { color: red; }
-    </style>
 </head>
 <body>
     <nav>

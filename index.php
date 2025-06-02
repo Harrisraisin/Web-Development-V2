@@ -1,3 +1,13 @@
+<?php
+require_once 'config.php';
+requireLogin();
+
+// Get user data
+$stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch();
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +20,7 @@
     
     <nav>
         <div class="nav-left">
-          <a href="index.html"><img src="images/logo2.png" class="logo"></a>
+          <a href="index.php"><img src="images/logo2.png" class="logo"></a>
         <ul>
            
             <li><img src="images/notification.png"></li>
@@ -25,7 +35,7 @@
                 <input type="text" placeholder="Search">
             </div>
             <div class="nav-user-icon online" onclick="settingsMenuToggle()">
-                <img src="images/profile-pic.png">
+                <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>">
             </div>
             
         </div>
@@ -36,10 +46,10 @@
             </div>
             <div class="settings-menu-inner">
                 <div class="user-profile">
-                    <img src="images/profile-pic.png">
+                    <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>">
                     <div>
-                        <p>John Nicholson</p>
-                        <a href="profile.html">See your profile</a>
+                        <p><?php echo htmlspecialchars($user['full_name']); ?></p>
+                        <a href="profile.php">See your profile</a>
                     </div>
                 </div>
                 <hr>
@@ -65,7 +75,7 @@
                 </div>
                 <div class="settings-links">
                     <img src="images/logout.png" class="settings-icon">
-                    <a href="">Logout <img src="images/arrow.png" width="10px"></a>
+                    <a href="logout.php">Logout <img src="images/arrow.png" width="10px"></a>
                 </div>
             </div>
             

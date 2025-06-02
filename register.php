@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_POST['full_name']
             ]);
             
-            $success = "Registration successful! Please login.";
+            $success = "Registration successful! Please <a href='login.php'>login here</a>";
         }
     } catch (PDOException $e) {
         error_log($e->getMessage());
