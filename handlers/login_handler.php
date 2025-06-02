@@ -6,10 +6,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $response = array('success' => false, 'message' => '');
     
     try {
-        // Get email and password from POST
-        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
-        
+        // Get email and password from POST, trimming any extra spaces
+        $email = trim(filter_var($_POST['email'], FILTER_SANITIZE_EMAIL));
+        $password = trim($_POST['password']);
+
         // Debug log
         error_log("Login attempt for email: " . $email);
 
@@ -17,6 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        // Debug log the fetched user (excluding password for security)
+        if ($user) {
+            error_log("Fetched user: " . json_encode(array('user_id' => $user['user_id'], 'username' => $user['username'])));
+        } else {
+            error_log("No user found for email: " . $email);
+        }
         
         if ($user && password_verify($password, $user['password'])) {
             if ($user['status'] === 'active') {
