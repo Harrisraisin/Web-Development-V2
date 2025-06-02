@@ -32,9 +32,23 @@ body {
     transition: background 0.3s;
 }
 
+/* Body and Navigation Styles */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--nav-color) 0%, #0056b3 100%);
+    padding: 5px 5%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
 a {
     text-decoration: none;
     color: inherit;
+    transition: color 0.3s; /* Added transition for links */
 }
 
 ul {
@@ -42,17 +56,6 @@ ul {
 }
 
 /* --------------- Navigation ------------ */
-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--nav-color);
-    padding: 5px 5%;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
 .logo {
     width: 160px;
     margin-right: 45px;
@@ -64,13 +67,18 @@ nav {
     align-items: center;
 }
 
+.nav-left ul li {
+    display: inline-block;
+}
+
 .nav-left ul li img {
     width: 28px;
     margin: 0 15px;
+    transition: transform 0.3s; /* Added transition for images */
 }
 
-.nav-left ul li {
-    display: inline-block;
+.nav-left ul li:hover img {
+    transform: scale(1.1); /* Scale effect on hover */
 }
 
 .nav-user-icon img {
@@ -85,7 +93,7 @@ nav {
 
 /* --------------- Search Box ------------ */
 .search-box {
-    background: #efefef;
+    background: var(--body-color); /* Use CSS variable */
     width: 350px;
     border-radius: 20px;
     display: flex;
@@ -116,7 +124,7 @@ nav {
     height: 7px;
     border: 2px solid #fff;
     border-radius: 50%;
-    right: 0px;
+    right: 0;
     top: 0;
     background: #41db51;
     position: absolute;
@@ -154,7 +162,7 @@ nav {
     flex-basis: 47%;
 }
 
-/* ----------left sidebar------ */
+/* ---------- Left Sidebar ------ */
 .imp-links a,
 .shortcut-links a {
     display: flex;
@@ -162,6 +170,7 @@ nav {
     margin-bottom: 30px;
     color: var(--text-color);
     width: fit-content;
+    transition: color 0.3s; /* Added transition for links */
 }
 
 .imp-links a img {
@@ -189,8 +198,7 @@ nav {
     font-weight: 500;
 }
 
-/* ------------right sidebar------- */
-
+/* ------------ Right Sidebar ------- */
 .sidebar-title {
     display: flex;
     align-items: center;
@@ -281,10 +289,9 @@ nav {
     bottom: 5px;
 }
 
-/* ------------------ main content ------------- */
+/* ------------------ Main Content ------------- */
 
-
-/* -------story-------- */
+/* ------- Story -------- */
 .story-gallery {
     display: flex;
     justify-content: space-between;
@@ -347,7 +354,7 @@ nav {
     width: 35px;
 }
 
-/* ------------write post --------- */
+/* ------------ Write Post --------- */
 .write-post-container {
     width: 100%;
     background: var(--bg-color);
@@ -409,9 +416,7 @@ nav {
     margin-right: 10px;
 }
 
-/* -------post list------- */
-
-
+/* ------- Post List ------- */
 .post-container {
     width: 100%;
     background: var(--bg-color);
@@ -479,7 +484,7 @@ nav {
     margin-right: 5px;
 }
 
-/* --------settings-menu----------- */
+/* -------- Settings Menu ----------- */
 .settings-menu {
     width: 90%;
     max-width: 350px;
@@ -553,7 +558,7 @@ nav {
     font-size: 13px;
 }
 
-/*---------- dark mode button--------- */
+/*---------- Dark Mode Button --------- */
 #dark-btn {
     position: absolute;
     top: 20px;
@@ -580,7 +585,7 @@ nav {
     background: #0a0a0a;
 }
 
-/* -------- profile page --------- */
+/* -------- Profile Page --------- */
 .profile-container {
     padding: 20px 15%;
     color: var(--text-color);
@@ -773,8 +778,7 @@ nav {
     left: 0;
 }
 
-/* ---------------- home page media query ---------- */
-
+/* ---------------- Home Page Media Query ---------- */
 @media (max-width: 900px) {
     nav {
         flex-wrap: wrap;
@@ -847,8 +851,7 @@ nav {
     }
 }
 
-/* ---------------- profile page media query ---------- */
-
+/* ---------------- Profile Page Media Query ---------- */
 @media (max-width: 900px) {
     .profile-details {
         flex-wrap: wrap;
@@ -952,5 +955,17 @@ nav {
     background: #ddd;
 }
 
+/* Loading Spinner */
+.loading-spinner {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--nav-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
 
-
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
